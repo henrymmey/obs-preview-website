@@ -1,5 +1,8 @@
 # OBS Preview Website
 
+> [!NOTE]
+> This is a personal project that was programmed largely using AI.
+
 A Docker-based application that receives an OBS stream and provides a low-latency live preview in the browser. Ideal for streamers who want to check their stream before going live or for production environments that require an internal preview.
 
 ## Features
