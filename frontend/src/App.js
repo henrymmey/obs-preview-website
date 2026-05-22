@@ -27,8 +27,8 @@ function App() {
       <header className="App-header">
         <h1>OBS Live Preview</h1>
         <video ref={videoRef} controls autoPlay muted className="video-player"></video>
-        <p>Stellen Sie sicher, dass Ihr OBS-Stream an rtmp://localhost:1935/live/STREAM_KEY gesendet wird.</p>
-        <p>Ersetzen Sie STREAM_KEY durch Ihren tatsächlichen Stream-Schlüssel.</p>
+        <p>Ensure your OBS stream is sent to rtmp://localhost:1935/live/STREAM_KEY.</p>
+        <p>Replace STREAM_KEY with your actual stream key.</p>
       </header>
     </div>
   );

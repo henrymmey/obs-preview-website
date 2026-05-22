@@ -1,95 +1,94 @@
 # OBS Preview Website
 
-Eine Docker-basierte Anwendung, die einen OBS-Stream empfängt und eine verzögerungsarme Live-Vorschau im Browser bereitstellt. Ideal für Streamer, die ihren Stream vor dem Go-Live überprüfen möchten oder für Produktionsumgebungen, die eine interne Vorschau benötigen.
+A Docker-based application that receives an OBS stream and provides a low-latency live preview in the browser. Ideal for streamers who want to check their stream before going live or for production environments that require an internal preview.
 
-## Funktionen
+## Features
 
-- **RTMP-Server:** Empfängt Streams von OBS Studio.
-- **HLS/DASH-Transkodierung:** Konvertiert den RTMP-Stream in HLS (HTTP Live Streaming) und DASH (Dynamic Adaptive Streaming over HTTP) für die Web-Wiedergabe.
-- **Web-Frontend:** Eine einfache React-Anwendung, die den HLS-Stream im Browser anzeigt.
-- **Docker-Unterstützung:** Einfache Bereitstellung und Skalierung mit Docker und Docker Compose.
-- **Geringe Latenz:** Optimiert für eine möglichst geringe Verzögerung (Hinweis: WebRTC-Integration ist ein zukünftiges Feature für extrem niedrige Latenz).
+-   **RTMP Server:** Receives streams from OBS Studio.
+-   **HLS/DASH Transcoding:** Converts the RTMP stream to HLS (HTTP Live Streaming) and DASH (Dynamic Adaptive Streaming over HTTP) for web playback.
+-   **Web Frontend:** A simple React application that displays the HLS stream in the browser.
+-   **Docker Support:** Easy deployment and scaling with Docker and Docker Compose.
+-   **Low Latency:** Optimized for the lowest possible delay (Note: WebRTC integration is a future feature for extremely low latency).
 
-## Architektur
+## Architecture
 
-Das Projekt besteht aus zwei Hauptkomponenten:
+The project consists of two main components:
 
-1.  **Server (Node.js mit `node-media-server`):**
-    *   Empfängt RTMP-Streams auf Port `1935`.
-    *   Transkodiert den Stream in HLS und DASH.
-    *   Stellt HTTP-Endpunkte für HLS/DASH auf Port `8000` bereit.
-    *   Enthält einen WebSocket-Server auf Port `8080` für zukünftige WebRTC-Signalisierung.
+1.  **Server (Node.js with `node-media-server`):**
+    *   Receives RTMP streams on port `1935`.
+    *   Transcodes the stream to HLS and DASH.
+    *   Provides HTTP endpoints for HLS/DASH on port `8000`.
+    *   Includes a WebSocket server on port `8080` for future WebRTC signaling.
 
-2.  **Frontend (React mit Nginx):**
-    *   Eine Single-Page-Anwendung (SPA), die den HLS-Stream über ein `<video>`-Element und die `hls.js`-Bibliothek wiedergibt.
-    *   Wird von einem Nginx-Webserver bereitgestellt.
-    *   Greift auf den HLS-Stream des Servers zu.
+2.  **Frontend (React with Nginx):**
+    *   A Single-Page Application (SPA) that plays the HLS stream via a `<video>` element and the `hls.js` library.
+    *   Served by an Nginx web server.
+    *   Accesses the server's HLS stream.
 
-## Voraussetzungen
+## Prerequisites
 
 -   [Docker](https://www.docker.com/get-started)
 -   [Docker Compose](https://docs.docker.com/compose/install/)
 -   [OBS Studio](https://obsproject.com/)
 
-## Installation und Einrichtung
+## Installation and Setup
 
-1.  **Repository klonen:**
+1.  **Clone the repository:**
 
     ```bash
     git clone https://github.com/YOUR_USERNAME/obs-preview-website.git
     cd obs-preview-website
     ```
 
-2.  **Anwendung starten:**
+2.  **Start the application:**
 
     ```bash
     docker-compose up --build -d
     ```
 
-    Dies baut die Docker-Images und startet die Dienste im Hintergrund. Der Server ist dann auf Port `1935` (RTMP), `8000` (HTTP) und `8080` (WebSocket) verfügbar. Das Frontend ist auf Port `3000` verfügbar.
+    This builds the Docker images and starts the services in the background. The server will then be available on port `1935` (RTMP), `8000` (HTTP), and `8080` (WebSocket). The frontend will be available on port `3000`.
 
-3.  **Zugriff auf das Frontend:**
+3.  **Access the Frontend:**
 
-    Öffnen Sie Ihren Webbrowser und navigieren Sie zu `http://localhost:3000`.
+    Open your web browser and navigate to `http://localhost:3000`.
 
-## OBS Studio Konfiguration
+## OBS Studio Configuration
 
-1.  Öffnen Sie OBS Studio.
-2.  Gehen Sie zu **Einstellungen** -> **Stream**.
-3.  Wählen Sie als **Dienst** `Benutzerdefiniert...`.
-4.  Geben Sie unter **Server** folgendes ein:
+1.  Open OBS Studio.
+2.  Go to **Settings** -> **Stream**.
+3.  Select `Custom...` as the **Service**.
+4.  Enter the following under **Server**:
 
     ```
     rtmp://localhost:1935/live
     ```
 
-    *Hinweis: Wenn Sie Docker auf einem Remote-Server ausführen, ersetzen Sie `localhost` durch die IP-Adresse oder den Domainnamen Ihres Servers.*
+    *Note: If you are running Docker on a remote server, replace `localhost` with the IP address or domain name of your server.*
 
-5.  Geben Sie unter **Stream-Schlüssel** einen beliebigen Schlüssel ein, z.B. `my_stream_key`.
+5.  Enter any key under **Stream Key**, e.g., `my_stream_key`.
 
-    *Wichtig: Dieser Stream-Schlüssel muss im Frontend in `frontend/src/App.js` angepasst werden, damit der richtige Stream angezeigt wird. Suchen Sie nach `STREAM_KEY` und ersetzen Sie es durch Ihren gewählten Schlüssel. **Vergessen Sie nicht, dies zu tun, bevor Sie das Frontend-Image bauen!***
+    *Important: This stream key must be adjusted in the frontend in `frontend/src/App.js` for the correct stream to be displayed. Search for `STREAM_KEY` and replace it with your chosen key. **Don't forget to do this before building the frontend image!***
 
-6.  Klicken Sie auf **Anwenden** und dann auf **OK**.
-7.  Starten Sie das Streaming in OBS Studio (`Streaming starten`).
+6.  Click **Apply** and then **OK**.
+7.  Start streaming in OBS Studio (`Start Streaming`).
 
-Sie sollten nun eine Live-Vorschau Ihres Streams unter `http://localhost:3000` sehen.
+You should now see a live preview of your stream at `http://localhost:3000`.
 
-## WebRTC (Zukünftige Entwicklung)
+## WebRTC (Future Development)
 
-Aktuell verwendet die Anwendung HLS für die Wiedergabe, was eine geringe Latenz bietet, aber nicht 
-die extrem niedrige Latenz von WebRTC erreicht. Die `app.js` des Servers enthält bereits einen WebSocket-Server, der als Grundlage für eine zukünftige WebRTC-Signalisierung dienen kann.
+Currently, the application uses HLS for playback, which offers low latency but does not achieve the extremely low latency of WebRTC. The server's `app.js` already includes a WebSocket server that can serve as a basis for future WebRTC signaling.
 
-Die Integration von WebRTC ist komplexer und erfordert einen STUN/TURN-Server sowie eine detailliertere Implementierung der SDP-Aushandlung und ICE-Kandidaten im Frontend und Backend. Dies ist ein geplantes Feature, um die Latenz weiter zu minimieren.
+Integrating WebRTC is more complex and requires a STUN/TURN server as well as a more detailed implementation of SDP negotiation and ICE candidates in the frontend and backend. This is a planned feature to further minimize latency.
 
-## Entwicklung
+## Development
 
 ### Server
 
-Der Server basiert auf `node-media-server`. Änderungen an der `app.js` oder `package.json` erfordern einen Neustart des Docker-Containers.
+The server is based on `node-media-server`. Changes to `app.js` or `package.json` require a restart of the Docker container.
 
 ### Frontend
 
-Das Frontend ist eine React-Anwendung. Für die Entwicklung können Sie:
+The frontend is a React application. For development, you can:
 
 ```bash
 cd frontend
@@ -97,8 +96,8 @@ npm install
 npm start
 ```
 
-Dies startet den React-Entwicklungsserver, der Hot-Reloading unterstützt. Beachten Sie, dass der `server`-Dienst von Docker Compose laufen muss, damit das Frontend auf den Stream zugreifen kann.
+This starts the React development server, which supports hot-reloading. Note that the `server` Docker Compose service must be running for the frontend to access the stream.
 
-## Lizenz
+## License
 
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. Siehe die `LICENSE`-Datei für weitere Details.
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
