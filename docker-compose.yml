@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "1935:1935" # RTMP
+      - "8000:8000" # HTTP for HLS/DASH
+      - "8080:8080" # WebSocket for signaling
+    volumes:
+      - ./server:/app # Mount for development, remove in production
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80" # Frontend accessible on port 3000, served by Nginx on 80
+    depends_on:
+      - server
+    restart: always
