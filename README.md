@@ -10,7 +10,7 @@ Self-hosted OBS preview stack for a Linux VPS:
 ## Files
 
 - `docker-compose.yml` - MediaMTX and the Next.js app
-- `mediamtx.yml` - MediaMTX ingest and HLS configuration
+- `mediamtx.yml` - MediaMTX ingest and standard HLS configuration
 - `.env.example` - domain used by the Nginx renderer script
 - `.env.mediamtx` - local-only MediaMTX stream credentials, ignored by Git
 - `.env.mediamtx.example` - example values for the MediaMTX credentials
@@ -145,4 +145,5 @@ Visit `https://${STREAM_DOMAIN}/` in the browser. When OBS starts streaming, the
 - The stream key is stored in `.env.mediamtx` and OBS configuration only; the main YAML stays versioned.
 - The domain name is stored in `.env`; render the Nginx config again whenever you change it.
 - The frontend only consumes the public HLS playlist and never sees the RTMP secret.
+- The stack now uses standard HLS (`mpegts`) instead of Low-Latency HLS for better browser compatibility.
 - If you want a flatter public HLS URL later, add an extra Nginx rewrite and keep the MediaMTX path unchanged.

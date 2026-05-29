@@ -123,10 +123,10 @@ export function StreamPlayer() {
     }
 
     const hls = new Hls({
-      lowLatencyMode: true,
+      lowLatencyMode: false,
       enableWorker: true,
       backBufferLength: 30,
-      liveSyncDurationCount: 2,
+      liveSyncDurationCount: 3,
       manifestLoadingMaxRetry: 2,
       levelLoadingMaxRetry: 2,
       fragLoadingMaxRetry: 2,

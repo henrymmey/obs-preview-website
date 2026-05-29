@@ -5,10 +5,9 @@ hlsAddress: :8888
 hlsAllowOrigins:
   - "*"
 hlsAlwaysRemux: true
-hlsVariant: lowLatency
+hlsVariant: mpegts
 hlsSegmentCount: 7
 hlsSegmentDuration: 2s
-hlsPartDuration: 500ms
 hlsMuxerCloseAfter: 30s
 hlsDirectory: /var/lib/mediamtx/hls
 
