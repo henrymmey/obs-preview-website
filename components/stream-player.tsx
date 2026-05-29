@@ -3,7 +3,12 @@
 import Hls from "hls.js";
 import { useEffect, useRef, useState } from "react";
 
-type StreamStatus = "checking" | "connecting" | "live" | "offline";
+type StreamStatus =
+  | "checking"
+  | "connecting"
+  | "live"
+  | "offline"
+  | "needs-action";
 
 const manifestUrl =
   process.env.NEXT_PUBLIC_HLS_URL ?? "/hls/live/stream/index.m3u8";
@@ -29,6 +34,24 @@ export function StreamPlayer() {
   const [status, setStatus] = useState<StreamStatus>("checking");
   const [lastCheckedAt, setLastCheckedAt] = useState<Date | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
+
+  const attemptPlay = async (video: HTMLVideoElement) => {
+    try {
+      await video.play();
+      setStatus("live");
+      setLastError(null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      if (message.toLowerCase().includes("notallowed")) {
+        setStatus("needs-action");
+        setLastError("Der Browser blockiert Autoplay. Bitte den Stream manuell starten.");
+        return;
+      }
+
+      setStatus("offline");
+      setLastError("Der Stream konnte nicht gestartet werden.");
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -80,6 +103,10 @@ export function StreamPlayer() {
       return;
     }
 
+    video.muted = true;
+    video.playsInline = true;
+    video.autoplay = true;
+
     if (availability !== true) {
       if (hlsRef.current) {
         hlsRef.current.destroy();
@@ -98,28 +125,17 @@ export function StreamPlayer() {
       setLastError(message);
     };
 
-    const onVideoPlaying = () => {
-      setStatus("live");
-      setLastError(null);
-    };
-
-    video.addEventListener("playing", onVideoPlaying);
-
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = manifestUrl;
       video.load();
-      void video.play().catch(() => undefined);
+      void attemptPlay(video);
 
-      return () => {
-        video.removeEventListener("playing", onVideoPlaying);
-      };
+      return undefined;
     }
 
     if (!Hls.isSupported()) {
       markOffline("Dein Browser unterstützt kein HLS-Playback.");
-      return () => {
-        video.removeEventListener("playing", onVideoPlaying);
-      };
+      return undefined;
     }
 
     const hls = new Hls({
@@ -138,7 +154,7 @@ export function StreamPlayer() {
       hls.loadSource(manifestUrl);
     });
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      void video.play().catch(() => undefined);
+      void attemptPlay(video);
     });
     hls.on(Hls.Events.ERROR, (_event, data) => {
       if (data.fatal) {
@@ -151,7 +167,6 @@ export function StreamPlayer() {
     });
 
     return () => {
-      video.removeEventListener("playing", onVideoPlaying);
       hls.destroy();
       if (hlsRef.current === hls) {
         hlsRef.current = null;
@@ -187,7 +202,25 @@ export function StreamPlayer() {
               muted
               playsInline
               preload="metadata"
+              crossOrigin="anonymous"
             />
+
+            {status === "needs-action" ? (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/45 px-4 text-center backdrop-blur-sm">
+                <button
+                  type="button"
+                  className="rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-medium text-white shadow-glow transition hover:bg-white/15"
+                  onClick={() => {
+                    const video = videoRef.current;
+                    if (video) {
+                      void attemptPlay(video);
+                    }
+                  }}
+                >
+                  Stream starten
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
 
