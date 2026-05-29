@@ -4,6 +4,8 @@ services:
     container_name: obs-preview-mediamtx
     restart: unless-stopped
     command: ["/mediamtx", "/mediamtx.yml"]
+    env_file:
+      - ./.env.mediamtx
     ports:
       - "1935:1935"
       - "127.0.0.1:8888:8888"

@@ -15,5 +15,3 @@ hlsDirectory: /var/lib/mediamtx/hls
 paths:
   live/stream:
     source: publisher
-    publishUser: obs
-    publishPass: change-me-now
