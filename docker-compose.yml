@@ -3,7 +3,7 @@ services:
     image: bluenviron/mediamtx:latest
     container_name: obs-preview-mediamtx
     restart: unless-stopped
-    command: ["/mediamtx", "/mediamtx.yml"]
+    command: ["/mediamtx.yml"]
     env_file:
       - ./.env.mediamtx
     ports:
