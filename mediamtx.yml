@@ -6,7 +6,7 @@ hlsAllowOrigins:
   - "*"
 hlsAlwaysRemux: true
 hlsVariant: lowLatency
-hlsSegmentCount: 6
+hlsSegmentCount: 7
 hlsSegmentDuration: 2s
 hlsPartDuration: 500ms
 hlsMuxerCloseAfter: 30s
