@@ -11,8 +11,9 @@ Self-hosted OBS preview stack for a Linux VPS:
 
 - `docker-compose.yml` - MediaMTX and the Next.js app
 - `mediamtx.yml` - MediaMTX ingest and HLS configuration
-- `.env` - domain used by the Nginx renderer script
+- `.env.example` - domain used by the Nginx renderer script
 - `.env.mediamtx` - local-only MediaMTX stream credentials, ignored by Git
+- `.env.mediamtx.example` - example values for the MediaMTX credentials
 - `nginx/stream.domain.de.conf` - Nginx template rendered from `.env`
 - `scripts/render-nginx-config.sh` - helper that renders the Nginx config from `.env`
 - `app/` and `components/` - Next.js app router frontend
@@ -67,6 +68,13 @@ cd obs-preview-website
 
 ### 3) Set the local env files
 
+Copy the example files first:
+
+```bash
+cp .env.example .env
+cp .env.mediamtx.example .env.mediamtx
+```
+
 Edit `.env` and set your domain:
 
 ```bash
@@ -89,11 +97,7 @@ Update the following files if needed:
 - `.env` for your actual domain
 - `nginx/stream.domain.de.conf` if you want to change the Nginx template itself
 
-If you do not have certificates yet, create them first with Certbot after Nginx is enabled:
-
-```bash
-sudo certbot --nginx -d "$STREAM_DOMAIN"
-```
+If you do not have certificates yet, run Certbot after the Nginx vhost has been rendered and enabled in the next step.
 
 ### 5) Start the stack
 
@@ -113,6 +117,7 @@ sudo cp /tmp/stream-site.conf /etc/nginx/sites-available/stream-site.conf
 sudo ln -sfn /etc/nginx/sites-available/stream-site.conf /etc/nginx/sites-enabled/stream-site.conf
 sudo nginx -t
 sudo systemctl reload nginx
+sudo certbot --nginx -d "$STREAM_DOMAIN"
 ```
 
 ### 7) Verify the deployment
