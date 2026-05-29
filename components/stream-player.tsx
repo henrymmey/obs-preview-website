@@ -44,7 +44,9 @@ export function StreamPlayer() {
       const message = error instanceof Error ? error.message : "";
       if (message.toLowerCase().includes("notallowed")) {
         setStatus("needs-action");
-        setLastError("Der Browser blockiert Autoplay. Bitte den Stream manuell starten.");
+        setLastError(
+          "Der Browser blockiert Autoplay. Bitte den Stream manuell starten.",
+        );
         return;
       }
 
